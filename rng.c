@@ -1,8 +1,8 @@
 /*! \file rng.c
  *  \brief Function definitions for easy random number generation */
-#include"rng.h"
-#include<gsl/gsl_rng.h>
-#include<gsl/gsl_randist.h>
+#include "rng.h"
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
 
 /*! \var int flag_rng_gaussian
  *  \brief Initialization flag for Gaussian RNG */
@@ -32,6 +32,13 @@ int flag_rng_integer;
  *  \brief Initialization flag for permutation RNG*/
 int flag_rng_permutation;
 
+/*! \var int flag_rng_tdist
+ *  \brief Initialization flag for tdist RNG*/
+int flag_rng_tdist;
+
+/*! \var int flag_rng_levy
+ *  \brief Initialization flag for levy RNG*/
+int flag_rng_levy;
 
 /*! \var const gsl_rng_type *T_rng_gaussian
  * \brief RNG type for Gaussian PDF */
@@ -62,6 +69,14 @@ const gsl_rng_type *T_rng_integer;
 /*! \var const gsl_rng_type *T_rng_permutation;
  * \brief RNG type for permutation PDF */
 const gsl_rng_type *T_rng_permutation;
+
+/*! \var const gsl_rng_type *T_rng_tdist;
+ * \brief RNG type for t-distribution PDF */
+const gsl_rng_type *T_rng_tdist;
+
+/*! \var const gsl_rng_type *T_rng_levy;
+ * \brief RNG type for a Levy distribution PDF */
+const gsl_rng_type *T_rng_levy;
 
 /*! \var gsl_rng *r_rng_gaussian
  *  \brief Gaussian RNG */
@@ -94,6 +109,14 @@ gsl_rng *r_rng_permutation;
 /*! \var gsl_permuation *p_rng_permutation
  *  \brief Permutation */
 gsl_permutation *p_rng_permutation;
+
+/*! \var gsl_rng *r_rng_tdist
+ *  \brief t-distribution RNG */
+gsl_rng *r_rng_tdist;
+
+/*! \var gsl_rng *r_rng_levy
+ *  \brief Levy-distribution RNG */
+gsl_rng *r_rng_levy;
 
 /*! \fn double rng_gaussian(double mu, double sigma)
  *  \brief Returns a Gaussianly-distributed random number with mean mu and dispersion sigma */
@@ -143,6 +166,25 @@ int rng_poisson(double mu)
 		initialize_rng_poisson();
 	return gsl_ran_poisson(r_rng_poisson, mu);
 }
+
+/*! \fn double rng_tdist(double nu)
+ *  \brief Returns a t-distributed random number with parameter nu*/
+double rng_tdist(double nu)
+{
+	if(flag_rng_tdist!=1337)
+		initialize_rng_tdist();
+	return gsl_ran_tdist(r_rng_tdist, nu);
+}
+
+/*! \fn double rng_levy(double nu)
+ *  \brief Returns a Levy-distributed random number with parameter nu*/
+double rng_levy(double nu)
+{
+	if(flag_rng_levy!=1337)
+		initialize_rng_levy();
+	return gsl_ran_levy(r_rng_levy, 1., nu);
+}
+
 
 /*! \fn size_t *rng_permutation(int n)
  *  \brief Returns [0,n-1], randomly permutated*/
@@ -256,6 +298,32 @@ void initialize_rng_poisson(void)
 	r_rng_poisson = gsl_rng_alloc(T_rng_poisson);
 }
 
+/*! \fn void initialize_rng_tdist(void)
+ *  \brief Initializes tdist random number generator */
+void initialize_rng_tdist(void)
+{
+	flag_rng_tdist = 1337;
+
+	gsl_rng_env_setup();
+
+	T_rng_tdist = gsl_rng_taus;
+	r_rng_tdist = gsl_rng_alloc(T_rng_tdist);
+}
+
+/*! \fn void initialize_rng_levy(void)
+ *  \brief Initializes levy random number generator */
+void initialize_rng_levy(void)
+{
+	flag_rng_levy = 1337;
+
+	gsl_rng_env_setup();
+
+	T_rng_levy = gsl_rng_taus;
+	r_rng_levy = gsl_rng_alloc(T_rng_levy);
+}
+
+
+
 /*! \fn void initialize_rng_direction(void)
  *  \brief Initializes direction random number generator */
 void initialize_rng_direction(void)
@@ -286,6 +354,33 @@ void set_rng_exponential_seed(int seed)
 	if(flag_rng_exponential!=1337)
 		initialize_rng_exponential();
 	gsl_rng_set(r_rng_exponential, seed);
+}
+
+/*! \fn void set_rng_poisson_seed(int seed)
+ *  \brief Set poisson rng seed */
+void set_rng_poisson_seed(int seed)
+{
+	if(flag_rng_poisson!=1337)
+		initialize_rng_poisson();
+	gsl_rng_set(r_rng_poisson, seed);
+}
+
+/*! \fn void set_rng_tdist_seed(int seed)
+ *  \brief Set tdist rng seed */
+void set_rng_tdist_seed(int seed)
+{
+	if(flag_rng_tdist!=1337)
+		initialize_rng_tdist();
+	gsl_rng_set(r_rng_tdist, seed);
+}
+
+/*! \fn void set_rng_levy_seed(int seed)
+ *  \brief Set levy rng seed */
+void set_rng_levy_seed(int seed)
+{
+	if(flag_rng_levy!=1337)
+		initialize_rng_levy();
+	gsl_rng_set(r_rng_levy, seed);
 }
 
 /*! \fn void set_rng_gaussian_seed(int seed)

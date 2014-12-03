@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <gsl/gsl_sort.h>
 #include "spanning_tree.hpp"
 #include "write_spanning_tree.hpp"
 #include "rng.h"
@@ -7,10 +8,13 @@
 
 int main(int argc, char **argv)
 {
-	long n   = 100;
+	long n   = 10;
 	int dim = 3;
-	int nngb = 10;
-	float bsq = 10.0;
+	int nngb = 20;
+	float bsq = 10000000000.0;
+	int weight;
+	float w;
+  int fac = 100000000;
 
 	double t_a;
 	double t_b;
@@ -28,14 +32,33 @@ int main(int argc, char **argv)
 	data.resize(extents[n][dim]);
 	for(long i=0;i<n;i++)
 		for(int k=0;k<dim;k++)
-			data[i][k] = rng_uniform(0.0,1.0);
+    {
+			//data[i][k] = rng_gaussian(0.0,1.0);
+			//data[i][k] = rng_levy(1.0);
+			data[i][k] = rng_levy(1.1);
+			//data[i][k] = rng_tdist(500.0);
+      //data[i][k] = rng_uniform(0.0,1.0);
+      //data[i][k] = pow(data[i][k],6);
+    }
+
 
 	//save data to file
 	sprintf(fname,"points.txt");
 	fp = fopen(fname,"w");
 	fprintf(fp,"%ld\n",n);
 	for(long i=0;i<n;i++)
-		fprintf(fp,"%f\t%f\t%f\n",data[i][0],data[i][1],data[i][2]);
+		fprintf(fp,"%e\t%e\t%e\n",data[i][0],data[i][1],data[i][2]);
+	fclose(fp);
+	sprintf(fname,"points.dat");
+	fp = fopen(fname,"w");
+	fwrite(&n,1,sizeof(int),fp);
+	for(long i=0;i<n;i++)
+	{
+		fwrite(&data[i][0],1,sizeof(float),fp);
+		fwrite(&data[i][1],1,sizeof(float),fp);
+		fwrite(&data[i][2],1,sizeof(float),fp);
+
+	}
 	fclose(fp);
 
 	//build the kdtree
@@ -72,6 +95,32 @@ int main(int argc, char **argv)
 	write_spanning_tree(fname, mst);
 
 
+
+	FILE *fpi = fopen("index.txt","w");
+	for(long i=0;i<mst.size();i++)
+	{		
+		w = fac*mst[i].dis;
+		weight = (int) floor(w);
+		//if(fmod(w,1)>0.5)
+		//	weight++;
+		//fprintf(fpi,"%ld\t%ld\t%d\n",mst[i].idx_A,mst[i].idx_B,i+1);
+		fprintf(fpi,"%ld\t%ld\n",mst[i].idx_A,mst[i].idx_B);
+
+	}
+	fclose(fpi);
+
+/*
+	for(long i=0;i<mst.size();i++)
+	{
+		w = fac*mst[i].dis;
+		weight = (int) floor(w);
+		//if(fmod(w,1)>0.5)
+		//	weight++;
+		printf("%ld\t%ld\t%d\n",mst[i].idx_A,mst[i].idx_B,weight);
+		printf("%ld\t%ld\t%d\n",mst[i].idx_A,mst[i].idx_B,weight);
+
+	}
+*/
 	//destroy the tree
 	destroy_spanning_tree();
 

@@ -34,10 +34,22 @@ readu,1,idxAst
 readu,1,idxBst
 close,1
 
+xmin = 1.1*min(x)
+xmax = 1.1*max(x)
+if abs(xmin) gt xmax then begin
+  xmax = -1.0*xmin
+endif else begin
+  if xmin lt 0 then begin
+    xmin = -1.0*xmax
+  endif
+endelse
+ymin = xmin
+ymax = xmax
+
 test = set_psym_circle()
 device,decompose=0
 window,2,xsize=600,ysize=600
-plot,[0],[0],xrange=[0,1],yrange=[0,1],xstyle=1,ystyle=1
+plot,[0],[0],xrange=[xmin,xmax],yrange=[ymin,ymax],xstyle=1,ystyle=1
 xx = fltarr(2)
 yy = fltarr(2)
 for i=0,nst-1 do begin
@@ -56,8 +68,11 @@ for i=0,n-1 do begin
 	oplot,xx,yy,color = (255.-40.)*float(i)/float(n-1)+40., thick=3
 endfor
 loadct,0,/silent
-oplot,x(0,*),x(1,*),psym=8
-oplot,y(0,*),y(1,*),psym=8
+;oplot,x(0,*),x(1,*),psym=8
+;oplot,y(0,*),y(1,*),psym=8
 
 
+for i=0,n-1 do begin
+  print,idxA(i),idxB(i)
+endfor
 end

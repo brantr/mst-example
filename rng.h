@@ -1,5 +1,5 @@
-#include<gsl/gsl_rng.h>
-#include<gsl/gsl_permutation.h>
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_permutation.h>
 #ifndef BRANT_RNG
 #define BRANT_RNG
 
@@ -15,6 +15,9 @@ extern int flag_rng_exponential;
 extern int flag_rng_direction;
 extern int flag_rng_integer;
 extern int flag_rng_permutation;
+extern int flag_rng_tdist;
+extern int flag_rng_levy;
+
 
 extern const gsl_rng_type *T_rng_gaussian;
 extern const gsl_rng_type *T_rng_uniform;
@@ -22,6 +25,9 @@ extern const gsl_rng_type *T_rng_exponential;
 extern const gsl_rng_type *T_rng_direction;
 extern const gsl_rng_type *T_rng_integer;
 extern const gsl_rng_type *T_rng_permutation;
+extern const gsl_rng_type *T_rng_tdist;
+extern const gsl_rng_type *T_rng_levy;
+
 
 extern gsl_rng *r_rng_gaussian;
 extern gsl_rng *r_rng_uniform;
@@ -29,6 +35,8 @@ extern gsl_rng *r_rng_exponential;
 extern gsl_rng *r_rng_direction;
 extern gsl_rng *r_rng_integer;
 extern gsl_rng *r_rng_permutation;
+extern gsl_rng *r_rng_tdist;
+extern gsl_rng *r_rng_levy;
 
 extern gsl_permutation *p_rng_permutation;
 
@@ -56,6 +64,15 @@ double rng_exponential(double mu);
  *  \brief Returns a poisson-distributed random number with scale mu*/
 int rng_poisson(double mu);
 
+/*! \fn double rng_tdist(double nu)
+ *  \brief Returns a t-distributed random number with parameter nu*/
+double rng_tdist(double nu);
+
+/*! \fn double rng_levy(double nu)
+ *  \brief Returns a Levy-distributed random number with parameter nu*/
+double rng_levy(double nu);
+
+
 /*! \fn double *rng_direction(int ndim)
  *  \brief Returns a random direction in n dimensions*/
 double *rng_direction(int ndim);
@@ -76,6 +93,14 @@ void initialize_rng_exponential(void);
 /*! \fn void initialize_rng_poisson(void)
  *  \brief Initializes poisson random number generator */
 void initialize_rng_poisson(void);
+
+/*! \fn void initialize_rng_tdist(void)
+ *  \brief Initializes tdist random number generator */
+void initialize_rng_tdist(void);
+
+/*! \fn void initialize_rng_levy(void)
+ *  \brief Initializes levy random number generator */
+void initialize_rng_levy(void);
 
 /*! \fn void initialize_rng_direction(void)
  *  \brief Initializes direction random number generator */
@@ -105,6 +130,14 @@ void set_rng_exponential_seed(int seed);
 /*! \fn void set_rng_poisson_seed(int seed)
  *  \brief Set poisson rng seed. */
 void set_rng_poisson_seed(int seed);
+
+/*! \fn void set_rng_tdist_seed(int seed)
+ *  \brief Set tdist rng seed. */
+void set_rng_tdist_seed(int seed);
+
+/*! \fn void set_rng_levy_seed(int seed)
+ *  \brief Set levy rng seed. */
+void set_rng_levy_seed(int seed);
 
 /*! \fn void set_rng_gaussian_seed(int seed)
  *  \brief Set gaussian rng seed. */
